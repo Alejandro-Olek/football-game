@@ -1,4 +1,3 @@
-// src/auth/auth.controller.ts
 import { Controller, Get, Post, Render, Res, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
 
@@ -8,25 +7,29 @@ export class AuthController {
 
   @Get('/login')
   @Render('login') 
-  getLoginPage() {}
+  getLoginPage() {
+    return { error: null };
+  }
 
   @Get('/register')
   @Render('register')  
-  getRegisterPage() {}
+  getRegisterPage() {
+    return { error: null };
+  }
 
   @Post('/register')
   async register(@Body() body, @Res() res) {
     const { email, password, confirmPassword, nickname } = body;
 
     if (password !== confirmPassword) {
-      return res.status(400).send('Las contraseñas no coinciden');
+      return res.render('register', { error: 'Passwords do not match' });
     }
     
     try {
       await this.authService.register(email, password, nickname);
       return res.redirect('/auth/login');
     } catch (error) {
-      return res.status(400).send(error.message);
+      return res.render('register', { error: error.message });
     }
   }
 
@@ -37,9 +40,9 @@ export class AuthController {
       const { token } = await this.authService.login(email, password);
 
       res.cookie('auth_token', token, { httpOnly: true });
-      return res.redirect('/dashboard'); // Redirigir a una página protegida
+      return res.redirect('/dashboard'); // Redirect to a protected page
     } catch (error) {
-      return res.status(401).send('Credenciales incorrectas');
+      return res.render('login', { error: 'Invalid credentials' });
     }
   }
 

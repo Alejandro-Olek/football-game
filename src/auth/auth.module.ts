@@ -16,6 +16,6 @@ export class AuthModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AuthMiddleware)
-      .forRoutes({ path: '/dashboard', method: RequestMethod.GET });
+      .forRoutes({ path: '/home', method: RequestMethod.GET });
   }
 }

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Fútbol</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            background-color: #1a202c;
+            color: #ffffff;
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+        header {
+            background-color: #2d3748;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 4px solid #48bb78;
+            position: relative;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-center {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 20px;
+            color: #68d391;
+            text-transform: uppercase;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        button {
+            background-color: #48bb78;
+            border: 2px solid #68d391;
+            color: white;
+            padding: 10px 15px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #68d391;
+        }
+
+        .refresh-btn {
+            font-size: 18px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #68d391;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #1a202c;
+        }
+
+        .nickname {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 12px;
+            color: #68d391;
+        }
+
+        /* Dropdown */
+        .dropdown {
+            display: none;
+            position: absolute;
+            top: 45px;
+            right: 0;
+            background-color: #2d3748;
+            border: 2px solid #48bb78;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 150px;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .dropdown a {
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            color: #9ae6b4;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .dropdown a:hover {
+            background-color: #48bb78;
+            color: white;
+        }
+
+        .header-right:hover .dropdown,
+        .dropdown:hover {
+            display: block;
+            pointer-events: auto;
+        }
+
+        /* FOOTER */
+        footer {
+            background-color: #2d3748;
+            text-align: center;
+            padding: 15px;
+            border-top: 4px solid #48bb78;
+            margin-top: auto;
+        }
+
+        .footer-text {
+            font-size: 12px;
+            color: #9ae6b4;
+        }
+
+        .footer-links a {
+            color: #63b3ed;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 12px;
+        }
+
+        .footer-links a:hover {
+            color: #90cdf4;
+        }
+
+        .modal-container {
+      width: 100%;
+      max-width: 448px;
+      background-color: #2d3748;
+      padding: 2rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                  0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      border: 4px solid #4299e1;
+      box-sizing: border-box;
+      position: relative;
+    }
+    .modal-title {
+      font-size: 1.5rem;
+      text-align: center;
+      font-weight: bold;
+      color: #63b3ed;
+      font-family: 'Press Start 2P', cursive;
+      margin: 0;
+    }
+    .modal-form {
+      margin-top: 1.5rem;
+    }
+    .modal-form label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #90cdf4;
+      font-family: 'Press Start 2P', cursive;
+    }
+    .modal-input {
+      width: 100%;
+      padding: 0.5rem;
+      border-radius: 0.25rem;
+      background-color: #4a5568;
+      color: #fff;
+      border: 1px solid #63b3ed;
+      outline: none;
+      box-sizing: border-box;
+    }
+    .modal-input:focus {
+      box-shadow: 0 0 0 2px #63b3ed;
+    }
+    .modal-button {
+      width: 100%;
+      margin-top: 1.5rem;
+      background-color: #4299e1;
+      color: #1a202c;
+      font-weight: bold;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.2s ease-in-out;
+    }
+    .modal-button:hover {
+      background-color: #63b3ed;
+    }
+    .error-message {
+      background-color: #e53e3e;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .spinner {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top: 4px solid white;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: auto;
+    }
+    .hidden {
+      display: none;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    #modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+    #modal-overlay.hidden {
+        display: none;
+    }
+
+    /* Tabla de partidos */
+    .matches-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+        .matches-table th,
+        .matches-table td {
+        border: 1px solid #48bb78;
+        padding: 8px 12px;
+        text-align: center;
+    }
+
+    .matches-table th {
+        background-color: #2d3748;
+        color: #68d391;
+    }
+
+    .join-btn {
+      display: inline-block;
+      padding: 8px 12px;
+      background-color: #48bb78; /* Verde principal */
+      color: #1a202c; /* Texto oscuro para contraste */
+      font-weight: bold;
+      text-decoration: none;
+      border: 2px solid #68d391; /* Borde en tono más claro */
+      border-radius: 6px;
+      transition: background-color 0.3s, transform 0.2s;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .join-btn:hover {
+        background-color: #68d391; /* Verde más claro al pasar el cursor */
+        transform: scale(1.05);
+    }
+
+    .join-btn:active {
+        background-color: #38a169; /* Un verde más oscuro al hacer clic */
+        transform: scale(0.95);
+    }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-left">
+            <button id="open-modal">⚽ Open Match</button>
+            <button class="refresh-btn">🔄</button>
+        </div>
+
+        <div class="header-center">Retro Football</div>
+
+        <div class="header-right">
+            <div class="avatar"><%= nickname.charAt(0).toUpperCase() %></div>
+            <span class="nickname"><%= nickname %></span>
+            <div class="dropdown">
+                <a href="#">Profile</a>
+                <a href="#">Settings</a>
+                <a href="#">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <main style="padding: 20px;">
+        <!-- Table of active matches -->
+        <table class="matches-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Type</th>
+              <th>Duration</th>
+              <th>Creator</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (matches && matches.length) { %>
+              <% matches.forEach(match => { %>
+                <tr>
+                  <td><%= match.id %></td>
+                  <td><%= match.type %></td>
+                  <td><%= match.duration %> min</td>
+                  <td><%= match.creator.nickname %></td>
+                  <td><%= new Date(match.date).toLocaleString() %></td>
+                  <td>
+                    <a href="/waiting-match?id=<%= match.id %>" class="join-btn">Join</a>
+                  </td>
+                </tr>
+              <% }); %>
+            <% } else { %>
+              <tr>
+                <td colspan="5">No active matches</td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </main>
+
+    <div id="modal-overlay" class="hidden">
+        <div class="modal-container">
+            <h1 class="modal-title">⚽ Create Match</h1>
+            <div id="error-message" class="error-message hidden"></div>
+            <div id="loading-spinner" class="spinner hidden"></div>
+            <form action="/dashboard/match" class="modal-form" method="post" onsubmit="showLoading()">
+                <label for="type">Match Type</label>
+                <select id="type" name="type" class="modal-input" required>
+                  <option value="friendly">Friendly</option>
+                  <option value="tournament">Tournament</option>
+                  <option value="ranked">Ranked</option>
+                </select>
+                <label for="duration">Duration (min)</label>
+                <input type="number" id="duration" name="duration" class="modal-input" value="10" min="1" required>
+                <button type="submit" class="modal-button">Create</button>
+              </form>
+              
+            <button id="close-modal" class="modal-button" style="margin-top: 10px; background-color: red;">Close</button>
+        </div>
+    </div>
+    
+    <footer>
+        <p class="footer-text">© 2025 Retro Football. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="#">Terms</a>
+            <a href="#">Privacy</a>
+            <a href="#">Contact</a>
+        </div>
+    </footer>
+    <script>
+        function showLoading() {
+      document.getElementById('loading-spinner').classList.remove('hidden');
+    }
+
+        document.getElementById("open-modal").addEventListener("click", function() {
+        document.getElementById("modal-overlay").classList.remove("hidden");
+    });
+
+    document.getElementById("close-modal").addEventListener("click", function() {
+        document.getElementById("modal-overlay").classList.add("hidden");
+    });
+
+    // Cerrar modal si se hace clic fuera de él
+    document.getElementById("modal-overlay").addEventListener("click", function(event) {
+        if (event.target === this) {
+            this.classList.add("hidden");
+        }
+    });
+      </script>
+</body>
+</html>
