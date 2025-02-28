@@ -18,7 +18,7 @@ export class AuthService {
     const existingUser = await this.userRepository.findOne({ where: { email } });
 
     if (existingUser) {
-      throw new ConflictException('El usuario ya existe');
+      throw new ConflictException('User already exists');
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -31,9 +31,9 @@ export class AuthService {
     });
 
     await this.userRepository.save(newUser);
-    console.log('Usuario registrado:', newUser);
+    console.log('User register:', newUser);
 
-    return { message: 'Usuario registrado correctamente' };
+    return { message: 'User created' };
   }
 
   // Autenticación de usuario
@@ -41,19 +41,19 @@ export class AuthService {
     const user = await this.userRepository.findOne({ where: { email } });
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      throw new UnauthorizedException('Credenciales incorrectas');
+      throw new UnauthorizedException('Wrong crenedtials');
     }
 
     const token = this.generateToken(user);
-    return { message: 'Login exitoso', token };
+    return { message: 'Succesful login', token };
   }
 
   // Generación de token JWT
   generateToken(user: User): string {
     return jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      { id: user.id, email: user.email, role: user.role, nickname: user.nickname },
       'SECRET_KEY',
-      { expiresIn: '1h' }
+      { expiresIn: '24h' }
     );
   }
 
@@ -62,7 +62,7 @@ export class AuthService {
     try {
       return jwt.verify(token, 'SECRET_KEY');
     } catch (error) {
-      throw new UnauthorizedException('Token inválido o expirado');
+      throw new UnauthorizedException('Token invalid or expired');
     }
   }
 }

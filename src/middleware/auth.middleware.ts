@@ -1,5 +1,5 @@
 // src/auth/auth.middleware.ts
-import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
 
@@ -14,10 +14,10 @@ export class AuthMiddleware implements NestMiddleware {
     
     try {
       const decoded = jwt.verify(token, 'SECRET_KEY');
-        (req as any).user = decoded;
+      (req as any).user = decoded;
       next();
     } catch (error) {
-      throw new UnauthorizedException('Token inválido o expirado');
+      return res.redirect('/auth/login'); // Redirige si el token es inválido
     }
   }
 }

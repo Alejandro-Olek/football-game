@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Sala de Espera - Partido</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    /* Reset básico */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    /* Estilos generales de la página */
+    body {
+      background-color: #1a202c;
+      color: #ffffff;
+      font-family: sans-serif;
+      height: 100vh;
+      display: flex;
+      align-items: stretch;
+    }
+    /* Contenedor principal dividido en dos paneles */
+    .container {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+    /* Panel izquierdo: Sala de espera */
+    .left-panel {
+      flex: 2;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    /* Panel derecho: Chat */
+    .right-panel {
+      flex: 1;
+      background-color: #2d3748;
+      border-left: 2px solid #48bb78;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    /* Títulos y encabezados */
+    .header {
+      font-family: 'Press Start 2P', cursive;
+      color: #68d391;
+      font-size: 24px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    /* Detalles del partido */
+    .match-details p {
+      margin: 10px 0;
+      font-size: 14px;
+    }
+    /* Lista de jugadores */
+    .players-section label {
+      font-family: 'Press Start 2P', cursive;
+      color: #9ae6b4;
+      margin-bottom: 10px;
+      display: block;
+      font-size: 14px;
+    }
+    .players {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 20px;
+    }
+    .players li {
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #48bb78;
+      border-radius: 4px;
+      background-color: #1a202c;
+      font-size: 14px;
+    }
+    /* Botón principal */
+    .button {
+      background-color: #48bb78;
+      border: none;
+      padding: 12px;
+      color: #ffffff;
+      width: 100%;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .button:hover {
+      background-color: #68d391;
+    }
+    /* Spinner */
+    .spinner {
+      border: 4px solid #4a5568;
+      border-top: 4px solid #ffffff;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto 0;
+      display: none;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    /* Estilos para el Chat */
+    .chat-header {
+      font-family: 'Press Start 2P', cursive;
+      color: #68d391;
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #48bb78;
+      border-radius: 4px;
+      background-color: #1a202c;
+      font-size: 14px;
+    }
+    .chat-message {
+      margin-bottom: 10px;
+    }
+    .chat-input {
+      display: flex;
+    }
+    .chat-input input {
+      flex: 1;
+      padding: 10px;
+      border: 2px solid #68d391;
+      border-radius: 4px 0 0 4px;
+      background-color: #4a5568;
+      color: #ffffff;
+      outline: none;
+      transition: border-color 0.3s ease;
+      font-size: 14px;
+    }
+    .chat-input input:focus {
+      border-color: #63b3ed;
+    }
+    .chat-input button {
+      background-color: #48bb78;
+      border: none;
+      padding: 10px 20px;
+      color: #ffffff;
+      border-radius: 0 4px 4px 0;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      font-size: 14px;
+    }
+    .chat-input button:hover {
+      background-color: #68d391;
+    }
+  </style>
+</head>
+<body>
+    <div class="container">
+      <!-- Panel Izquierdo: Sala de espera y detalles del partido -->
+      <div class="left-panel">
+        <div>
+          <div class="header">Sala de Espera</div>
+          <div class="match-details">
+            <p><strong>Partido:</strong> Equipo A vs Equipo B</p>
+            <p><strong>Fecha:</strong> 25/02/2025</p>
+            <p><strong>Hora:</strong> 18:00</p>
+          </div>
+          <div class="players-section">
+            <label>Jugadores en la sala:</label>
+            <ul class="players">
+              <!-- Aquí se agregarán dinámicamente los jugadores -->
+            </ul>
+          </div>
+        </div>
+        <div>
+          <button class="button">Iniciar Partido</button>
+          <div class="spinner"></div>
+        </div>
+      </div>
+      <!-- Panel Derecho: Chat sencillo -->
+      <div class="right-panel">
+        <div class="chat-header">Chat</div>
+        <div class="chat-messages">
+          <!-- Mensajes del chat -->
+        </div>
+        <div class="chat-input">
+          <input type="text" placeholder="Escribe un mensaje...">
+          <button>Enviar</button>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Incluir la librería de Socket.IO -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+      const matchId = "<%= matchId %>";
+      
+      // Unirse a la sala de Socket.IO
+      socket.emit('joinRoom', `match_${matchId}`);
+    
+      // Escuchar el evento 'currentPlayers' y actualizar la lista de jugadores
+      socket.on('currentPlayers', (players) => {
+        const playersList = document.querySelector('.players');
+        playersList.innerHTML = ''; // Limpiar lista actual
+        players.forEach(player => {
+          const li = document.createElement('li');
+          li.textContent = player.nickname || `Jugador ${player.userId}`;
+          playersList.appendChild(li);
+        });
+      });
+    
+      // Escuchar el evento 'newPlayer' para añadir jugadores en tiempo real
+      socket.on('newPlayer', (player, user) => {
+        const playersList = document.querySelector('.players');
+        const li = document.createElement('li');
+        li.textContent = user.nickname || `Jugador ${player.userId}`;
+        playersList.appendChild(li);
+      });
+
+      // Unirse a la partida vía HTTP POST
+      window.addEventListener('DOMContentLoaded', async () => {
+        try {
+          const response = await fetch(`/waiting-match/join?id=${matchId}`, {
+            method: 'POST',
+            credentials: 'include'
+          });
+    
+          if (!response.ok) {
+            throw new Error('Error al unirse a la partida');
+          }
+          const player = await response.json();
+          // El nuevo jugador se agregará a través del evento 'newPlayer'
+        } catch (error) {
+          console.error(error);
+        }
+      });
+
+      window.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const response = await fetch(`/waiting-match/players?id=${matchId}`, {
+          method: 'GET',
+          credentials: 'include'
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const playersList = document.querySelector('.players');
+          playersList.innerHTML = '';
+          data.players.forEach(player => {
+            const li = document.createElement('li');
+            li.textContent = player.nickname || `Jugador ${player.userId}`;
+            playersList.appendChild(li);
+          });
+        } else {
+          console.error('Error al obtener los jugadores');
+        }
+      } catch (error) {
+        console.error(error);
+      }
+
+      socket.on('playerLeft', (data) => {
+        const { userId } = data;
+        const playersList = document.querySelector('.players');
+        // Buscar y remover el elemento correspondiente al userId
+        const playerItem = playersList.querySelector(`[data-user-id="${userId}"]`);
+        if (playerItem) {
+          playerItem.remove();
+        }
+      });
+
+  });
+      </script>
+  </body>
+</html>
